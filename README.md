@@ -36,9 +36,12 @@ For all the other system, or if you want the latest functionality follow the dir
 
 4. Copy CUPS-PDF_opt.ppd to your CUPS model directory
 
-``cp CUPS-PDF_opt.ppd /usr/share/cups/model``
+``sudo cp CUPS-PDF_opt.ppd /usr/share/cups/model``
 
-5. Copy and edit /etc/cups.cups-pdf.conf is needed
+5. Copy cups-pdf.conf to /etc/cups (and then edit as needed):
+
+``sudo cp cups-pdf.conf /etc/cups/
+
 6. Remove CUPS-PDF printer, if you have any, and recreate it. Make sure to pick "Generic CUPS-PDF Printer (w/ options)" as the driver
 
 
