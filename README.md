@@ -40,7 +40,7 @@ For all the other system, or if you want the latest functionality follow the dir
 
 5. Copy cups-pdf.conf to /etc/cups (and then edit as needed):
 
-``sudo cp cups-pdf.conf /etc/cups/
+``sudo cp cups-pdf.conf /etc/cups/``
 
 6. Remove CUPS-PDF printer, if you have any, and recreate it. Make sure to pick "Generic CUPS-PDF Printer (w/ options)" as the driver
 
