@@ -1,4 +1,4 @@
-/* cups-pdf.h -- CUPS Backend Header File (version 3.0beta2, 2014-10-19)
+/* cups-pdf.h -- CUPS Backend Header File (version 3.0.1, 2017-02-24)
    16.05.2003, Volker C. Behr
    volker@cups-pdf.de
    http://www.cups-pdf.de
@@ -26,7 +26,7 @@
 /* The following settings are for internal purposes only - all relevant 
 /  options listed below can be set via cups-pdf.conf at runtime		*/
 
-#define CPVERSION "v3.0beta2"
+#define CPVERSION "v3.0.1"
 
 #define CPERROR         1
 #define CPSTATUS        2
