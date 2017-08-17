@@ -1,4 +1,4 @@
-/* cups-pdf.c -- CUPS Backend (version 3.0beta2, 2014-10-19)
+/* cups-pdf.c -- CUPS Backend (version 3.0.1, 2017-02-24)
    08.02.2003, Volker C. Behr
    volker@cups-pdf.de
    http://www.cups-pdf.de
@@ -11,7 +11,7 @@
 
    ---------------------------------------------------------------------------
 
-   Copyright (C) 2003-2014  Volker C. Behr
+   Copyright (C) 2003-2017  Volker C. Behr
 
    This program is free software; you can redistribute it and/or
    modify it under the terms of the GNU General Public License
@@ -91,7 +91,7 @@ static void log_event(short type, const char *message, ...) {
     va_end(ap);
 
     fprintf(logfp,"%s  [%s] %s\n", timestring, ctype, logbuffer);
-    if ((Conf_LogType & CPDEBUG) && (type & CPERROR) && error)
+    if ((Conf_LogType & CPDEBUG) && (type == CPERROR) && error)
       fprintf(logfp,"%s  [DEBUG] ERRNO: %d (%s)\n", timestring, error, strerror(error));
 
     (void) fflush(logfp);
@@ -356,6 +356,7 @@ static int init(char *argv[]) {
   struct stat fstatus;
   struct group *group;
   cp_string filename;
+  int grpstat;
   const char *uri=cupsBackendDeviceURI(argv);
 
   if ((uri != NULL) && (strncmp(uri, "cups-pdf:/", 10) == 0) && strlen(uri) > 10) {
@@ -374,8 +375,7 @@ static int init(char *argv[]) {
   (void) umask(0077);
 
   group=getgrnam(Conf_Grp);
-  if (group)
-    (void) setgid(group->gr_gid);
+  grpstat=setgid(group->gr_gid);
 
   if (strlen(Conf_Log)) {
     if (stat(Conf_Log, &fstatus) || !S_ISDIR(fstatus.st_mode)) {
@@ -394,8 +394,12 @@ static int init(char *argv[]) {
     log_event(CPERROR, "Grp not found: %s", Conf_Grp);
     return 1;
   }
+  else if (grpstat) {
+    log_event(CPERROR, "failed to set new gid: %s", Conf_Grp);
+    return 1;
+  }
   else
-    log_event(CPDEBUG, "switching to new gid: %s", Conf_Grp);
+    log_event(CPDEBUG, "set new gid: %s", Conf_Grp);
 
   (void) umask(0022);
 
@@ -431,6 +435,7 @@ static void announce_printers() {
       if ((strncmp(config_ent->d_name, "cups-pdf-", 9) == 0) &&
           (len > 14 && strcmp(config_ent->d_name + len - 5, ".conf") == 0)) {
         strncpy(setup, config_ent->d_name + 9, BUFSIZE>len-14 ? len-14 : BUFSIZE);
+        setup[BUFSIZE>len-14 ? len-14 : BUFSIZE - 1] = '\0';
         printf("file cups-pdf:/%s \"Virtual %s Printer\" \"CUPS-PDF\" \"MFG:Generic;MDL:CUPS-PDF Printer;DES:Generic CUPS-PDF Printer;CLS:PRINTER;CMD:PDF,POSTSCRIPT;\"\n", setup, setup);
       }
     }
@@ -628,10 +633,6 @@ static int preparetitle(char *title) {
     else {
       replace_string(title);
     }
-    log_event(CPDEBUG, "removing trailing newlines from title: %s", title);
-    while (strlen(title) && ((title[strlen(title)-1] == '\n') || (title[strlen(title)-1] == '\r'))) {
-      title[strlen(title)-1]='\0';
-    }
     i=strlen(title);
     if (i>1) {
       while (title[--i]=='_');
@@ -731,39 +732,51 @@ static int preparespoolfile(FILE *fpsrc, char *spoolfile, char *title, char *cmd
     log_event(CPSTATUS, "***Experimental Option: FixNewlines");
   else
     log_event(CPDEBUG, "using traditional fgets");
-  while ((bytes = fread(buffer, sizeof(char), 4, fpsrc)) > 0) {
+
+  while (fgets2(buffer, BUFSIZE, fpsrc) != NULL) {
     if (!strncmp(buffer, "%PDF", 4)) {
       log_event(CPDEBUG, "found beginning of PDF code", buffer);
       input_is_pdf=1;
-      rec_depth++;
+      break;
     }
-    if (!strncmp(buffer, "%!", 2)) {
-      if (!rec_depth++)
-        log_event(CPDEBUG, "found beginning of postscript code: %s", buffer);
-      else
+    if (!strncmp(buffer, "%!", 2) && strncmp(buffer, "%!PS-AdobeFont", 14)) {
+      log_event(CPDEBUG, "found beginning of postscript code: %s", buffer);
+      break;
+    }
+  }
+
+  (void) fputs(buffer, fpdest);
+
+  if (input_is_pdf) {
+    fwrite(buffer, sizeof(char), 4, fpdest);
+    while((bytes = fread(buffer, sizeof(char), BUFSIZE, fpsrc)) > 0)
+      fwrite(buffer, sizeof(char), bytes, fpdest);
+  } else {
+    log_event(CPDEBUG, "now extracting postscript code");
+    while (fgets2(buffer, BUFSIZE, fpsrc) != NULL) {
+      (void) fputs(buffer, fpdest);
+      if (!is_title && !rec_depth)
+        if (sscanf(buffer, "%%%%Title: %"TBUFSIZE"c", title)==1) {
+          log_event(CPDEBUG, "found title in ps code: %s", title);
+          is_title=1;
+        }
+      if (!strncmp(buffer, "%!", 2)) {
         log_event(CPDEBUG, "found embedded (e)ps code: %s", buffer);
-    }
-    if (rec_depth > 0) {
-      if (input_is_pdf) {
-        fwrite(buffer, sizeof(char), 4, fpdest);
-        while((bytes = fread(buffer, sizeof(char), BUFSIZE, fpsrc)) > 0)
-          fwrite(buffer, sizeof(char), bytes, fpdest);
-      } else {
-        (void) fputs(buffer, fpdest);
-        if (!is_title && rec_depth == 1 &&
-          sscanf(buffer, "%%%%Title: %"TBUFSIZE"c", title)==1) {
-        log_event(CPDEBUG, "found title in ps code: %s", title);
-        is_title=1;
+        rec_depth++;
       }
-      if (!strncmp(buffer, "%%EOF", 5)) {
-        if (!--rec_depth)
+      else if (!strncmp(buffer, "%%EOF", 5)) {
+        if (!rec_depth) {
           log_event(CPDEBUG, "found end of postscript code: %s", buffer);
-        else
+          break;
+        }
+        else {
           log_event(CPDEBUG, "found end of embedded (e)ps code: %s", buffer);
+          rec_depth--;
+        }
       }
     }
   }
-  }
+
   (void) fclose(fpdest);
   (void) fclose(fpsrc);
   log_event(CPDEBUG, "all data written to spoolfile: %s", spoolfile);

@@ -1,5 +1,5 @@
 # CUPS-PDF v3 with text print support
-This is a [cups-pdf v3 beta 2](http://www.cups-pdf.de/src/cups-pdf_3.0beta2.tar.gz) with a patch to allow printing text as text, not as images. This issue is also known as "cups-pdf not embedding text", or "[producing large PDFs with text that can not be searched](https://bugs.launchpad.net/ubuntu/+source/cups-pdf/+bug/366949)"
+This is a [cups-pdf v3.0.1](http://www.cups-pdf.de/src/cups-pdf_3.0.1.tar.gz) with a patch to allow printing text as text, not as images. This issue is also known as "cups-pdf not embedding text", or "[producing large PDFs with text that can not be searched](https://bugs.launchpad.net/ubuntu/+source/cups-pdf/+bug/366949)"
 
 This is fix is achieved by adding PDF passthrough functionality, so incoming PDFs remain PDFs, instead of being converted from [PDF to PostScript, then back to PDF](https://bugs.launchpad.net/ubuntu/+source/cups-pdf/+bug/820820). Why is this fix not in the original code? The author had different goals for CUPS-PDF in mind, [refusing to fix it.](https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=658004)
 
