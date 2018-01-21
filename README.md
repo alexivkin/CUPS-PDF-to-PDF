@@ -13,9 +13,10 @@ This is fix is achieved by adding PDF passthrough functionality, so incoming PDF
 Installing
 ----------
 There is a cups-pdf version 2.6.1 with the fix in an easy to install deb patch form in [ppa:jethrogb/ppa](https://launchpad.net/~jethrogb/+archive/ubuntu/ppa). Add it to your list of apt sources and update.
+For Arch Linux you can find it in AUR: [cups-pdf-to-pdf-git](https://aur.archlinux.org/packages/cups-pdf-to-pdf-git/)
+
 For all the other system, or if you want the latest functionality follow the directions below:
 
-For Arch Linux in AUR: [cups-pdf-to-pdf-git](https://aur.archlinux.org/packages/cups-pdf-to-pdf-git/)
 
 1. Get the development prerequisites
 
