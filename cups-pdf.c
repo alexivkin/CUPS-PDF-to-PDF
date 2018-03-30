@@ -748,7 +748,6 @@ static int preparespoolfile(FILE *fpsrc, char *spoolfile, char *title, char *cmd
   (void) fputs(buffer, fpdest);
 
   if (input_is_pdf) {
-    fwrite(buffer, sizeof(char), 4, fpdest);
     while((bytes = fread(buffer, sizeof(char), BUFSIZE, fpsrc)) > 0)
       fwrite(buffer, sizeof(char), bytes, fpdest);
   } else {
