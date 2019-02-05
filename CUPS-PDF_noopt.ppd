@@ -31,8 +31,11 @@
 *ModelName:     "Generic CUPS-PDF Printer"
 *ShortNickName: "Generic CUPS-PDF Printer"
 *NickName:      "Generic CUPS-PDF Printer (no options)"
-*1284DeviceID:  "MFG:Generic;MDL:CUPS-PDF Printer;DES:Generic CUPS-PDF Printer;CLS:PRINTER;CMD:POSTSCRIPT;"
-*% cupsFilter:    "application/vnd.cups-postscript 0 pstitleiconv"
+*% 1284DeviceID:  "MFG:Generic;MDL:CUPS-PDF Printer;DES:Generic CUPS-PDF Printer;CLS:PRINTER;CMD:POSTSCRIPT;"
+*1284DeviceID:  "MFG:Generic;MDL:CUPS-PDF Printer;DES:Generic CUPS-PDF Printer;CLS:PRINTER;CMD:PDF,POSTSCRIPT;"
+*% cupsFilter:    "application/vnd.cups-postscript 100 pstitleiconv"
+*% cupsFilter:    "application/vnd.cups-pdf 0 pstitleiconv"
+*cupsFilter:    "application/pdf 0 -"
 *PSVersion:	"(2017.000) 0"
 *LanguageLevel:	"2"
 *ColorDevice:	True
@@ -60,7 +63,7 @@
 
 *OpenUI *PageSize/Page Size: PickOne
 *OrderDependency: 100 AnySetup *PageSize
-*DefaultPageSize: A4
+*DefaultPageSize: Letter
 *PageSize 11x14/11x14: "<</PageSize[792 1008]/ImagingBBox null>>setpagedevice"
 *PageSize 11x17/11x17: "<</PageSize[792 1224]/ImagingBBox null>>setpagedevice"
 *PageSize 13x19/13x19: "<</PageSize[936 1368]/ImagingBBox null>>setpagedevice"
@@ -130,7 +133,7 @@
 
 *OpenUI *PageRegion: PickOne
 *OrderDependency: 100 AnySetup *PageRegion
-*DefaultPageRegion: A4
+*DefaultPageRegion: Letter
 *PageRegion 11x14/11x14: "<</PageSize[792 1008]/ImagingBBox null>>setpagedevice"
 *PageRegion 11x17/11x17: "<</PageSize[792 1224]/ImagingBBox null>>setpagedevice"
 *PageRegion 13x19/13x19: "<</PageSize[936 1368]/ImagingBBox null>>setpagedevice"
@@ -198,7 +201,7 @@
 *PageRegion Tabloid/Tabloid: "<</PageSize[792 1224]/ImagingBBox null>>setpagedevice"
 *CloseUI: *PageRegion
 
-*DefaultImageableArea: A4
+*DefaultImageableArea: Letter
 *ImageableArea 11x14/11x14: "0 0 792 1008"
 *ImageableArea 11x17/11x17: "0 0 792 1224"
 *ImageableArea 13x19/13x19: "0 0 936 1368"
@@ -265,7 +268,7 @@
 *ImageableArea TabloidExtra/Tabloid Extra: "0 0 864 1296"
 *ImageableArea Tabloid/Tabloid: "0 0 792 1224"
 
-*DefaultPaperDimension: A4
+*DefaultPaperDimension: Letter
 *PaperDimension 11x14/11x14: "792 1008"
 *PaperDimension 11x17/11x17: "792 1224"
 *PaperDimension 13x19/13x19: "936 1368"
