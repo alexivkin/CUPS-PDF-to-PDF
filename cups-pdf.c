@@ -735,7 +735,7 @@ static int preparespoolfile(FILE *fpsrc, char *spoolfile, char *title, char *cmd
 
   while (fgets2(buffer, BUFSIZE, fpsrc) != NULL) {
     if (!strncmp(buffer, "%PDF", 4)) {
-      log_event(CPDEBUG, "found beginning of PDF code", buffer);
+      log_event(CPDEBUG, "found beginning of PDF code: %s", buffer);
       input_is_pdf=1;
       break;
     }
