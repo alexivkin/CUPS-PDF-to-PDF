@@ -1026,7 +1026,7 @@ int main(int argc, char *argv[]) {
     return 5;
   }
   if (input_is_pdf) {
-    snprintf(gscall, size, "cp %s %s", spoolfile, outfile);
+    snprintf(gscall, size, "cp \"%s\" \"%s\"", spoolfile, outfile);
   } else {
     snprintf(gscall, size, Conf_GSCall, Conf_GhostScript, Conf_PDFVer, outfile, spoolfile);
   }
